@@ -14,10 +14,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: "8.0"
+          dotnet-version: "6.0"
       - name: Build and Publish
         run: |
           dotnet publish -c Release -o out
       - name: Deploy to Azure
         run: |
-          az webapp up --name todoapp --resource-group myResourceGroup --runtime "DOTNET:8.0"
+          az webapp up --name todoapp --resource-group myResourceGroup --runtime "DOTNET:6.0"
