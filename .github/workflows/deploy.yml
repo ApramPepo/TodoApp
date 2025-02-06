@@ -1,0 +1,23 @@
+name: Deploy ASP.NET Core App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "8.0"
+      - name: Build and Publish
+        run: |
+          dotnet publish -c Release -o out
+      - name: Deploy to Azure
+        run: |
+          az webapp up --name todoapp --resource-group myResourceGroup --runtime "DOTNET:8.0"
