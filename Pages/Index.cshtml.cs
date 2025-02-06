@@ -1,19 +1,43 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace TodoApp.Pages;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    private readonly AppDbContext _context;
+    public List<TodoItem> Todos { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public IndexModel(AppDbContext context)
     {
-        _logger = logger;
+        _context = context;
+        Todos = new List<TodoItem>();
     }
 
-    public void OnGet()
+    public async Task OnGetAsync()
     {
+        Todos = await _context.Todos.ToListAsync();
+    }
 
+    public async Task<IActionResult> OnPostAddAsync(string task)
+    {
+        if (!string.IsNullOrEmpty(task))
+        {
+            _context.Todos.Add(new TodoItem { TaskName = task, Completed = false });
+            await _context.SaveChangesAsync();
+        }
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostDeleteAsync(int id)
+    {
+        var todo = await _context.Todos.FindAsync(id);
+        if (todo != null)
+        {
+            _context.Todos.Remove(todo);
+            await _context.SaveChangesAsync();
+        }
+        return RedirectToPage();
     }
 }
